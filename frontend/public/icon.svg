@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Rescue Notes icon">
+  <!-- Background rounded square -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0f6f8a"/>
+      <stop offset="1" stop-color="#1197b3"/>
+    </linearGradient>
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset in="SourceAlpha" dx="0" dy="18" result="off"/>
+      <feGaussianBlur in="off" stdDeviation="28" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 0 0 0 0.05  0 0 0 0 0.07  0 0 0 0.35 0" result="shadow"/>
+      <feBlend in="SourceGraphic" in2="shadow" mode="normal"/>
+    </filter>
+
+    <!-- subtle paper texture (very light) -->
+    <pattern id="paperDots" patternUnits="userSpaceOnUse" width="24" height="24">
+      <circle cx="1" cy="1" r="0.7" fill="#000" opacity="0.02"/>
+    </pattern>
+  </defs>
+
+  <!-- soft shadow under whole icon -->
+  <g filter="url(#softShadow)">
+    <rect x="64" y="64" width="896" height="896" rx="192" ry="192" fill="url(#bgGrad)"/>
+  </g>
+
+  <!-- Main paper (note) -->
+  <g transform="translate(168,160)">
+    <rect x="0" y="0" width="688" height="704" rx="36" ry="36" fill="#fff" stroke="#e6eef1" stroke-width="2"/>
+    <!-- faint paper texture -->
+    <rect x="0" y="0" width="688" height="704" rx="36" ry="36" fill="url(#paperDots)" opacity="0.28"/>
+
+    <!-- folded corner -->
+    <path d="M 640 0 L 688 48 L 688 176 L 640 176 Z" fill="#f7fbfc" opacity="0.95"/>
+    <path d="M 640 0 L 688 48 L 640 48 Z" fill="#e9f3f6"/>
+
+    <!-- horizontal note lines -->
+    <g stroke="#d9e6ea" stroke-linecap="round" stroke-width="16" opacity="0.95">
+      <line x1="64" y1="128" x2="600" y2="128"/>
+      <line x1="64" y1="232" x2="600" y2="232"/>
+      <line x1="64" y1="336" x2="600" y2="336"/>
+      <line x1="64" y1="440" x2="600" y2="440"/>
+      <line x1="64" y1="544" x2="600" y2="544"/>
+    </g>
+
+    <!-- subtle top-left title line -->
+    <rect x="64" y="40" width="420" height="28" rx="8" fill="#e6f2f6"/>
+
+    <!-- little lifebuoy (rescue symbol) tucked into top-right, slightly cropped to stay discreet) -->
+    <g transform="translate(538, -34) scale(0.74)" opacity="0.98">
+      <!-- outer ring -->
+      <circle cx="64" cy="64" r="64" fill="#fff" stroke="#e6eef1" stroke-width="4"/>
+      <circle cx="64" cy="64" r="48" fill="#fefefe" stroke="#e85b57" stroke-width="14"/>
+      <!-- inner cutouts / segments to make it look like a lifebuoy -->
+      <path d="M64 16 L78 32 L50 44 L36 28 Z" fill="#fefefe" transform="rotate(0 64 64) translate(0,0)"/>
+      <path d="M64 16 L78 32 L50 44 L36 28 Z" fill="#fefefe" transform="rotate(90 64 64)"/>
+      <path d="M64 16 L78 32 L50 44 L36 28 Z" fill="#fefefe" transform="rotate(180 64 64)"/>
+      <path d="M64 16 L78 32 L50 44 L36 28 Z" fill="#fefefe" transform="rotate(270 64 64)"/>
+      <!-- red segments on ring -->
+      <path d="M64 16 A48 48 0 0 1 98 34 L86 46 A32 32 0 0 0 64 32 Z" fill="#e85b57"/>
+      <path d="M100 64 A48 48 0 0 1 82 98 L70 86 A32 32 0 0 0 96 64 Z" fill="#e85b57"/>
+      <path d="M64 112 A48 48 0 0 1 30 94 L42 82 A32 32 0 0 0 64 96 Z" fill="#e85b57"/>
+      <path d="M28 64 A48 48 0 0 1 46 30 L58 42 A32 32 0 0 0 34 64 Z" fill="#e85b57"/>
+      <!-- small center circle -->
+      <circle cx="64" cy="64" r="18" fill="#fff" stroke="#e6eef1" stroke-width="2"/>
+    </g>
+
+    <!-- subtle "discreet" marker: a small pale dot near bottom to read like a normal note app -->
+    <circle cx="32" cy="660" r="8" fill="#d7e8eb" opacity="0.9"/>
+  </g>
+
+  <!-- small accessibility description in SVG (not displayed) -->
+  <title>Rescue Notes — discreet notes app with rescue lifebuoy mark</title>
+</svg>
