@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronRight, ChevronLeft, MapPin, Users, MessageSquare, CheckCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -20,6 +20,14 @@ export function EmergencySetupPage() {
   ]);
   const [defaultMessage, setDefaultMessage] = useState('I need help. This is an emergency. Please contact me or send assistance to my location.');
 
+  // If setup already completed, immediately leave this page
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('rescue-notes-emergency-setup');
+    if (hasVisited === 'completed') {
+      navigate({ type: 'emergency-comm' }, { replace: true });
+    }
+  }, [navigate]);
+
   const updateContact = (index: number, field: 'name' | 'phone', value: string) => {
     const updated = [...emergencyContacts];
     updated[index][field] = value;
@@ -32,7 +40,8 @@ export function EmergencySetupPage() {
     localStorage.setItem('rescue-notes-emergency-contacts', JSON.stringify(emergencyContacts));
     localStorage.setItem('rescue-notes-emergency-message', defaultMessage);
     
-    navigate({ type: 'emergency-comm' });
+    // Replace so back doesn't return to setup after completion
+    navigate({ type: 'emergency-comm' }, { replace: true });
   };
 
   const renderStep = () => {

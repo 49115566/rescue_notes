@@ -84,7 +84,8 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
 
   const handleViewNote = () => {
     if (noteId) {
-      navigate({ type: 'note-view', noteId });
+      // Replace so back doesn't bounce between edit/view
+      navigate({ type: 'note-view', noteId }, { replace: true });
     }
   };
 
@@ -101,6 +102,7 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
       <PageHeader 
         title="Edit Note"
         showBack={true}
+        onBack={() => navigate({ type: 'home' }, { replace: true })}
         showHelp={true}
         actions={
           <div className="flex items-center gap-2">

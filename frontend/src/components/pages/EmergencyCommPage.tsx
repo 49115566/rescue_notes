@@ -18,7 +18,8 @@ export function EmergencyCommPage() {
     const hasVisited = localStorage.getItem('rescue-notes-emergency-setup');
     if (!hasVisited) {
       setIsFirstVisit(true);
-      navigate({ type: 'emergency-setup' });
+      // Replace current route so back cannot return to this pre-setup page
+      navigate({ type: 'emergency-setup' }, { replace: true });
     }
   }, [navigate]);
 

@@ -30,7 +30,7 @@ type Route =
 
 interface RouterContextType {
   currentRoute: Route;
-  navigate: (route: Route) => void;
+  navigate: (route: Route, options?: { replace?: boolean }) => void;
   goBack: () => void;
   history: Route[];
 }
@@ -41,9 +41,19 @@ export function Router() {
   const [currentRoute, setCurrentRoute] = useState<Route>({ type: 'home' });
   const [history, setHistory] = useState<Route[]>([{ type: 'home' }]);
 
-  const navigate = (route: Route) => {
-    setHistory(prev => [...prev, route]);
-    setCurrentRoute(route);
+  const navigate = (route: Route, options?: { replace?: boolean }) => {
+    if (options?.replace) {
+      setHistory((prev: Route[]) => {
+        if (prev.length === 0) return [route];
+        const newHistory = [...prev];
+        newHistory[newHistory.length - 1] = route;
+        return newHistory;
+      });
+      setCurrentRoute(route);
+    } else {
+      setHistory((prev: Route[]) => [...prev, route]);
+      setCurrentRoute(route);
+    }
   };
 
   const goBack = () => {
