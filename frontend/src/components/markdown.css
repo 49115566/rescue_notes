@@ -1,0 +1,150 @@
+/* Scoped styles for rendered Markdown in the MarkdownRenderer component */
+.markdown {
+  color: var(--foreground);
+  line-height: 1.6;
+}
+
+/* Headings: distinct sizes, spacing, and subtle borders */
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.markdown h1 { font-size: clamp(1.5rem, 2.5vw, 2rem); }
+.markdown h2 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+.markdown h3 { font-size: clamp(1.125rem, 1.5vw, 1.25rem); }
+
+.markdown h2 { border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; }
+
+/* Paragraphs */
+.markdown p {
+  margin: 0.5rem 0 0.75rem;
+}
+
+/* Links: underline, accent color, and focus ring */
+.markdown a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.markdown a:hover {
+  opacity: 0.9;
+}
+.markdown a:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Lists: proper bullets and indentation, including nesting */
+.markdown ul,
+.markdown ol {
+  margin: 0.5rem 0 0.75rem 1.25rem;
+  padding-left: 1rem;
+  list-style-position: outside;
+}
+.markdown ul { list-style: disc; }
+.markdown ul ul { list-style: circle; }
+.markdown ul ul ul { list-style: square; }
+
+.markdown ol { list-style: decimal; }
+.markdown ol ol { list-style: lower-alpha; }
+.markdown ol ol ol { list-style: lower-roman; }
+
+/* Ensure additional indentation for nested lists of any type combination */
+.markdown ul ul,
+.markdown ul ol,
+.markdown ol ul,
+.markdown ol ol {
+  margin-left: 1.25rem;
+}
+
+.markdown li { margin: 0.25rem 0; }
+/* Nested list spacing */
+.markdown li > ul,
+.markdown li > ol {
+  margin-top: 0.25rem;
+}
+/* Marker color for lists */
+.markdown li::marker {
+  color: var(--muted-foreground);
+}
+
+/* Task lists (GFM) */
+.markdown li input[type="checkbox"] {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  transform: translateY(-1px);
+  accent-color: var(--primary);
+  pointer-events: none; /* keep static in viewer */
+}
+
+/* Code */
+.markdown code {
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  font-size: 0.95em;
+}
+
+.markdown pre {
+  background: var(--muted);
+  color: inherit;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+.markdown pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Blockquotes */
+.markdown blockquote {
+  border-left: 3px solid var(--border);
+  margin: 0.75rem 0;
+  padding-left: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+/* Horizontal rule */
+.markdown hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1rem 0;
+}
+
+/* Tables (GFM) */
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+}
+.markdown thead th {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.markdown th,
+.markdown td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.markdown tbody tr:nth-child(odd) {
+  background: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+/* Images */
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  display: block;
+}
+.markdown p > img:only-child {
+  margin: 0.5rem auto;
+}

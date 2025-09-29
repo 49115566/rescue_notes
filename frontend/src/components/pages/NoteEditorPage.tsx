@@ -21,7 +21,7 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
   const [loading, setLoading] = useState(!!noteId);
   const [saving, setSaving] = useState(false);
   const [showMarkdownHelp, setShowMarkdownHelp] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const saveTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (noteId) {
@@ -67,17 +67,18 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
 
   // Auto-save with debounce
   useEffect(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+    if (saveTimeoutRef.current !== null) {
+      window.clearTimeout(saveTimeoutRef.current);
     }
     
-    saveTimeoutRef.current = setTimeout(() => {
+    const id = window.setTimeout(() => {
       autoSave();
     }, 1000);
+    saveTimeoutRef.current = id;
 
     return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
+      if (saveTimeoutRef.current !== null) {
+        window.clearTimeout(saveTimeoutRef.current);
       }
     };
   }, [title, content]);
@@ -199,9 +200,37 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
                     <code className="block bg-muted p-2 rounded text-xs">
                       - Item 1<br/>
                       - Item 2<br/>
+                      &nbsp;&nbsp;- Nested bullet<br/>
                       <br/>
-                      1. Numbered item<br/>
-                      2. Another item
+                      1. First<br/>
+                      2. Second<br/>
+                      &nbsp;&nbsp;1. Nested numbered<br/>
+                      &nbsp;&nbsp;&nbsp;&nbsp;- Mixed nested bullet
+                    </code>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-2">Task Lists</h4>
+                    <code className="block bg-muted p-2 rounded text-xs">
+                      - [ ] To do item<br/>
+                      - [x] Completed item
+                    </code>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-2">Images</h4>
+                    <code className="block bg-muted p-2 rounded text-xs">
+                      ![Alt text](https://via.placeholder.com/300)
+                    </code>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-2">Tables</h4>
+                    <code className="block bg-muted p-2 rounded text-xs">
+                      | Column A | Column B |<br/>
+                      |---|---|<br/>
+                      | A1 | B1 |<br/>
+                      | A2 | B2 |
                     </code>
                   </div>
                 </div>

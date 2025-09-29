@@ -1,57 +1,52 @@
 import React from 'react';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+import './markdown.css';
 
 interface MarkdownRendererProps {
   content: string;
   className?: string;
 }
 
+// Configure marked for GitHub-flavored markdown and sensible defaults
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+});
+
 export function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
-  const parseMarkdown = (text: string) => {
-    // Basic markdown parsing
-    let html = text;
-    
-    // Headers
-    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-    
-    // Bold
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
-    
-    // Italic
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
-    
-    // Code blocks
-    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-    
-    // Inline code
-    html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-    
-    // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-    
-    // Line breaks
-    html = html.replace(/\n\n/g, '</p><p>');
-    html = html.replace(/\n/g, '<br>');
-    
-    // Wrap in paragraphs if not already wrapped
-    if (!html.startsWith('<h') && !html.startsWith('<p') && !html.startsWith('<pre')) {
-      html = '<p>' + html + '</p>';
-    }
-    
-    return html;
-  };
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  const html = React.useMemo(() => {
+    const raw = marked.parse(content ?? '');
+    // Sanitize to prevent XSS since notes are user-provided
+    const clean = DOMPurify.sanitize(raw as string, { USE_PROFILES: { html: true } });
+    return clean;
+  }, [content]);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const anchors = Array.from(el.querySelectorAll('a')) as HTMLAnchorElement[];
+    anchors.forEach(a => {
+      try {
+        const url = new URL(a.getAttribute('href') ?? '', window.location.href);
+        const isExternal = url.origin !== window.location.origin;
+        if (isExternal) {
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+        }
+      } catch {
+        // Ignore invalid URLs
+      }
+    });
+  }, [html]);
 
   return (
-    <div 
-      className={`prose prose-sm max-w-none ${className}`}
-      dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }}
-      style={{
-        // Custom prose styles that work with our theme
-        color: 'var(--foreground)',
-      }}
+    <div
+      ref={containerRef}
+      className={`markdown ${className}`}
+      dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }

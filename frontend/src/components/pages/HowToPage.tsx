@@ -133,7 +133,47 @@ export function HowToPage({ guide }: HowToPageProps) {
                 '',
                 '1. Use numbers for ordered lists',
                 '2. Great for step-by-step instructions',
-                '3. Numbers auto-update'
+                '3. Numbers auto-update',
+                '',
+                'Nested lists:',
+                '- Bullet level 1',
+                '  - Bullet level 2',
+                '    - Bullet level 3',
+                '',
+                '1. Numbered level 1',
+                '   1. Numbered level 2',
+                '      1. Numbered level 3',
+                '',
+                'Mixed nesting:',
+                '1. A numbered item',
+                '   - A bullet under it',
+                '     1. A numbered under that'
+              ]
+            },
+            {
+              title: 'Task Lists',
+              content: [
+                '- [ ] Task item (space between brackets)',
+                '- [x] Completed task (x inside brackets)',
+                'Task checkboxes are for display only when viewing notes.'
+              ]
+            },
+            {
+              title: 'Images',
+              content: [
+                'Use: ![Alt text](https://example.com/image.png)',
+                'Alt text is important for accessibility.',
+                'Images will scale to fit the screen and have rounded corners.'
+              ]
+            },
+            {
+              title: 'Tables',
+              content: [
+                'Create simple tables:',
+                '| Column A | Column B |',
+                '|---|---|',
+                '| A1 | B1 |',
+                '| A2 | B2 |'
               ]
             },
             {
