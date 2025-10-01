@@ -43,8 +43,9 @@ $ git clone https://github.com/49115566/rescue_notes.git
 # Change into the project directory
 $ cd rescue_notes
 
-# (Optional) Install dependencies
-$ dependency-install-command-to-be-documented-once-tech-stack-is-finalized
+# Install dependencies
+$ cd frontend
+$ npm install
 ```
 
 ## Usage
