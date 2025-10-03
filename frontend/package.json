@@ -1,6 +1,6 @@
 {
-      "name": "Rescue Notes Iteration 1",
-      "version": "0.1.0",
+      "name": "rescue-notes-frontend",
+      "version": "0.2.0",
       "private": true,
       "dependencies": {
             "@radix-ui/react-accordion": "^1.2.3",
@@ -45,6 +45,7 @@
             "react-hook-form": "^7.55.0",
             "react-resizable-panels": "^2.1.7",
             "recharts": "^2.15.2",
+            "socket.io-client": "^4.8.1",
             "sonner": "^2.0.3",
             "tailwind-merge": "*",
             "vaul": "^1.1.2"

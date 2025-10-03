@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, HelpCircle, Save } from 'lucide-react';
+import { Eye, HelpCircle, Save, Cloud, HardDrive, MoreVertical } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { PageHeader } from '../PageHeader';
 import { useRouter } from '../Router';
-import { useNotes } from '../hooks/useNotes';
+import { useNotes } from '../hooks/useNotesV2';
+import { useAuth } from '../../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { Badge } from '../ui/badge';
+import { toast } from 'sonner';
 
 interface NoteEditorPageProps {
   noteId?: string;
@@ -15,9 +19,11 @@ interface NoteEditorPageProps {
 
 export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
   const { navigate } = useRouter();
-  const { getNote, updateNote, createNote } = useNotes();
+  const { notes, getNote, updateNote, createNote, changeNoteStorage } = useNotes();
+  const { isAuthenticated, user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [storageType, setStorageType] = useState<'local' | 'cloud'>('local');
   const [loading, setLoading] = useState(!!noteId);
   const [saving, setSaving] = useState(false);
   const [showMarkdownHelp, setShowMarkdownHelp] = useState(false);
@@ -29,6 +35,18 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
     }
   }, [noteId]);
 
+  // Update local state when notes array changes (for real-time updates)
+  useEffect(() => {
+    if (noteId) {
+      const updatedNote = notes.find(n => n.id === noteId);
+      if (updatedNote) {
+        setTitle(updatedNote.title);
+        setContent(updatedNote.content);
+        setStorageType(updatedNote.storage_type || 'local');
+      }
+    }
+  }, [notes, noteId]);
+
   const loadNote = async () => {
     if (!noteId) return;
     
@@ -38,11 +56,25 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
       if (note) {
         setTitle(note.title);
         setContent(note.content);
+        setStorageType(note.storage_type || 'local');
       }
     } catch (error) {
       console.error('Failed to load note:', error);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const handleChangeStorage = async (newStorageType: 'local' | 'cloud') => {
+    if (!noteId) return;
+    
+    try {
+      await changeNoteStorage(noteId, newStorageType);
+      setStorageType(newStorageType);
+      toast.success(`Note moved to ${newStorageType} storage`);
+    } catch (error: any) {
+      console.error('Failed to change storage:', error);
+      toast.error(error.message || 'Failed to change storage type');
     }
   };
 
@@ -109,10 +141,40 @@ export function NoteEditorPage({ noteId }: NoteEditorPageProps) {
           <div className="flex items-center gap-2">
             {saving && <span className="text-sm text-muted-foreground">Saving...</span>}
             {noteId && (
-              <Button variant="outline" size="sm" onClick={handleViewNote}>
-                <Eye className="w-4 h-4 mr-2" />
-                View
-              </Button>
+              <>
+                <Badge variant={storageType === 'cloud' ? 'default' : 'outline'} className="flex items-center gap-1">
+                  {storageType === 'cloud' ? (
+                    <><Cloud className="w-3 h-3" /> Cloud</>
+                  ) : (
+                    <><HardDrive className="w-3 h-3" /> Local</>
+                  )}
+                </Badge>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {storageType === 'local' && isAuthenticated && user?.email_verified && (
+                      <DropdownMenuItem onClick={() => handleChangeStorage('cloud')}>
+                        <Cloud className="w-4 h-4 mr-2" />
+                        Move to Cloud
+                      </DropdownMenuItem>
+                    )}
+                    {storageType === 'cloud' && (
+                      <DropdownMenuItem onClick={() => handleChangeStorage('local')}>
+                        <HardDrive className="w-4 h-4 mr-2" />
+                        Move to Local
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button variant="outline" size="sm" onClick={handleViewNote}>
+                  <Eye className="w-4 h-4 mr-2" />
+                  View
+                </Button>
+              </>
             )}
           </div>
         }

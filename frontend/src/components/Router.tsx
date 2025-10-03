@@ -5,6 +5,7 @@ import { NoteViewPage } from './pages/NoteViewPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { HelpPage } from './pages/HelpPage';
 import { HowToPage } from './pages/HowToPage';
+import { AuthPage } from './pages/AuthPage';
 import { EmergencyCommPage } from './pages/EmergencyCommPage';
 import { EmergencySetupPage } from './pages/EmergencySetupPage';
 import { EmergencySettingsPage } from './pages/EmergencySettingsPage';
@@ -20,6 +21,7 @@ type Route =
   | { type: 'settings' }
   | { type: 'help' }
   | { type: 'how-to'; guide: string }
+  | { type: 'auth'; mode: 'login' | 'register' | 'forgot-password' | 'verify-email' }
   | { type: 'emergency-comm' }
   | { type: 'emergency-setup' }
   | { type: 'emergency-settings' }
@@ -85,6 +87,8 @@ export function Router() {
         return <HelpPage />;
       case 'how-to':
         return <HowToPage guide={currentRoute.guide} />;
+      case 'auth':
+        return <AuthPage mode={currentRoute.mode} />;
       case 'emergency-comm':
         return <EmergencyCommPage />;
       case 'emergency-setup':

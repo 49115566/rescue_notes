@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Edit, Download, Share } from 'lucide-react';
+import { Edit, Download, Share, Cloud, HardDrive, MoreVertical } from 'lucide-react';
 import { Button } from '../ui/button';
 import { PageHeader } from '../PageHeader';
 import { useRouter } from '../Router';
-import { useNotes } from '../hooks/useNotes';
+import { useNotes } from '../hooks/useNotesV2';
+import { useAuth } from '../../contexts/AuthContext';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { toast } from 'sonner@2.0.3';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
+import { Badge } from '../ui/badge';
+import { toast } from 'sonner';
 
 interface NoteViewPageProps {
   noteId: string;
@@ -13,13 +16,22 @@ interface NoteViewPageProps {
 
 export function NoteViewPage({ noteId }: NoteViewPageProps) {
   const { navigate } = useRouter();
-  const { getNote } = useNotes();
+  const { notes, getNote, changeNoteStorage } = useNotes();
+  const { isAuthenticated, user } = useAuth();
   const [note, setNote] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadNote();
   }, [noteId]);
+
+  // Update local note state when notes array changes (for real-time updates)
+  useEffect(() => {
+    const updatedNote = notes.find(n => n.id === noteId);
+    if (updatedNote) {
+      setNote(updatedNote);
+    }
+  }, [notes, noteId]);
 
   const loadNote = async () => {
     try {
@@ -36,6 +48,17 @@ export function NoteViewPage({ noteId }: NoteViewPageProps) {
   const handleEdit = () => {
     // Replace so back doesn't bounce between view/edit
     navigate({ type: 'note-editor', noteId }, { replace: true });
+  };
+  
+  const handleChangeStorage = async (newStorageType: 'local' | 'cloud') => {
+    try {
+      const updatedNote = await changeNoteStorage(noteId, newStorageType);
+      setNote(updatedNote);
+      toast.success(`Note moved to ${newStorageType} storage`);
+    } catch (error: any) {
+      console.error('Failed to change storage:', error);
+      toast.error(error.message || 'Failed to change storage type');
+    }
   };
 
   const handleExport = () => {
@@ -125,14 +148,47 @@ export function NoteViewPage({ noteId }: NoteViewPageProps) {
         showHelp={true}
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleShare}>
-              <Share className="w-4 h-4 mr-2" />
-              Share
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleExport}>
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
+            {note && (
+              <>
+                <Badge variant={(note.storage_type || 'local') === 'cloud' ? 'default' : 'outline'} className="flex items-center gap-1">
+                  {(note.storage_type || 'local') === 'cloud' ? (
+                    <><Cloud className="w-3 h-3" /> Cloud</>
+                  ) : (
+                    <><HardDrive className="w-3 h-3" /> Local</>
+                  )}
+                </Badge>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleShare}>
+                      <Share className="w-4 h-4 mr-2" />
+                      Share
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleExport}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {(note.storage_type || 'local') === 'local' && isAuthenticated && user?.email_verified && (
+                      <DropdownMenuItem onClick={() => handleChangeStorage('cloud')}>
+                        <Cloud className="w-4 h-4 mr-2" />
+                        Move to Cloud
+                      </DropdownMenuItem>
+                    )}
+                    {note.storage_type === 'cloud' && (
+                      <DropdownMenuItem onClick={() => handleChangeStorage('local')}>
+                        <HardDrive className="w-4 h-4 mr-2" />
+                        Move to Local
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
             <Button size="sm" onClick={handleEdit}>
               <Edit className="w-4 h-4 mr-2" />
               Edit

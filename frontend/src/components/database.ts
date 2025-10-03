@@ -2,6 +2,7 @@ export interface Note {
   id: string;
   title: string;
   content: string;
+  storage_type?: 'local' | 'cloud';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -84,11 +85,13 @@ class NotesDatabase {
     if (!this.db) await this.init();
     
     const now = new Date();
+    const existingNote = note.id ? await this.getNoteById(note.id) : null;
     const noteToSave: Note = {
       id: note.id || this.generateId(),
       title: note.title,
       content: note.content,
-      createdAt: note.id ? (await this.getNoteById(note.id))?.createdAt || now : now,
+      storage_type: note.storage_type || 'local',
+      createdAt: existingNote?.createdAt || now,
       updatedAt: now
     };
 
